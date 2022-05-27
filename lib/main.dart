@@ -1,10 +1,18 @@
 import "package:flutter/material.dart";
+import 'package:flutter/rendering.dart';
 
 void main() {
-  runApp(MaterialApp(
-    title: "Simple Interest calculator",
-    home: SIform(),
-  ));
+  runApp(
+    MaterialApp(
+        title: "Simple Interest calculator",
+        home: SIform(),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            colorScheme: ColorScheme.fromSwatch().copyWith(
+                primary: Colors.red,
+                brightness: Brightness.dark,
+                secondary: Color.fromARGB(255, 255, 0, 0)))),
+  );
 }
 
 class SIform extends StatefulWidget {
@@ -15,23 +23,27 @@ class SIform extends StatefulWidget {
 }
 
 class _SIformState extends State<SIform> {
-  var _currencies = ["Rupees", 'USD', 'AUD'];
-  var _currentItemSelected="Rupees";
+  TextEditingController pc= TextEditingController();
+  TextEditingController roic= TextEditingController();
+  TextEditingController termc= TextEditingController();
+  var displayText="";
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SafeArea(
+        child: Scaffold(
       appBar: AppBar(
         title: const Text(
           "Simple Interest Calculator",
         ),
       ),
       body: Container(
-        child: Column(
+        child: ListView(
           children: <Widget>[
             getImageAsset(),
             Padding(
                 padding: EdgeInsets.all(5.0),
                 child: TextField(
+                  controller: pc,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       labelText: "Principal",
@@ -42,6 +54,7 @@ class _SIformState extends State<SIform> {
             Padding(
               padding: EdgeInsets.all(5.0),
               child: TextField(
+                controller: roic,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: "Rate Of Interest",
@@ -54,6 +67,7 @@ class _SIformState extends State<SIform> {
               children: <Widget>[
                 Expanded(
                   child: TextField(
+                    controller: termc,
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                         labelText: "Term",
@@ -62,31 +76,51 @@ class _SIformState extends State<SIform> {
                             borderRadius: BorderRadius.circular(5.0))),
                   ),
                 ),
-
-                Expanded(child: DropdownButton<String>(
-							    items: _currencies.map((String value) {
-							    	return DropdownMenuItem<String>(
-									    value: value,
-									    child: Text(value),
-								    );
-							    }).toList(),
-
-							    value: 'Rupees',
-
-							    onChanged: (String newValueSelected) {
-							    	// Your code to execute, when a menu item is selected from dropdown
-							    },
-
-						    ))
-
-
+                
               ],
+            ),
+            Padding(
+                padding: EdgeInsets.all(10.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                        child: ElevatedButton(
+                            child: Text('Calculate'), 
+                            onPressed: () {
+                              setState(() {
+                                this.displayText =calcresult();
+                              });
+                            })),
+                    Expanded(
+                        child: ElevatedButton(
+                            child: Text('Reset'), 
+                            onPressed: () {
+                              setState(() {
+                                pc.text="";
+                                roic.text="";
+                                termc.text="";
+                                displayText="";
+                              });
+                            }))
+                  ],
+                )),
+            Padding(
+              padding: EdgeInsets.only(left: 70.0, top: 50.0),
+              child: Text(
+                "Your Amount would be $displayText"),
             )
           ],
         ),
       ),
-    );
+    ));
   }
+  String calcresult(){
+  double p=double.parse(pc.text);
+  double r=double.parse(roic.text);
+  double t=double.parse(termc.text);
+
+  return ((p*r*t/100)+p).toString();
+}
 }
 
 Widget getImageAsset() {
@@ -101,3 +135,5 @@ Widget getImageAsset() {
     margin: EdgeInsets.all(80.0),
   );
 }
+
+
